@@ -15,10 +15,12 @@ from datetime import datetime
 # JSON formatted string
 #dictionary = json.loads(x)
 #print(dictionary)
-def fetch_traffic_data():
+def fetch_traffic_data(expressway=None):
     # Define the API endpoint
     api = "https://api.data.gov.sg/v1/transport/traffic-images"  # Replace this URL with the actual API endpoint
-
+    if expressway:
+        api += f"?expressway={expressway}"  # Modify this based on the actual API's filter
+    
     try:
         # Make a request to the API
         response = requests.get(api)

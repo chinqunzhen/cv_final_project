@@ -9,7 +9,7 @@ app = Flask(__name__)
 # Replace with your API endpoint
 #API_BASE_URL = "https://your-backend-api.com/traffic"
 
-IMAGE_FOLDER = Path("traffic_images")  # Folder where images are stored
+IMAGE_FOLDER = Path("static/traffic_images")  # Folder where images are stored
 
 
 
@@ -33,8 +33,8 @@ def show_random_image():
 
 @app.route('/download_traffic_images')
 def download_traffic_images():
-    # Fetch traffic data from the API
-    json_data = fetch_traffic_data()
+    expressway = request.args.get('expressway')  # Capture the expressway parameter from the request
+    json_data = fetch_traffic_data(expressway=expressway)  # Adjust fetch_traffic_data to accept this parameter
 
     if json_data:
         # Print the dictionary to the console (for verification)

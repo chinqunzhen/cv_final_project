@@ -12,24 +12,45 @@
 
         <div class="expressway-selector">
             <h2>Select an Expressway</h2>
-            <button onclick="fetchTrafficData('ECP')">AYE</button>
-            <button onclick="fetchTrafficData('CTE')">BKE</button>
-            <button onclick="fetchTrafficData('PIE')">CTE</button>
-            <button onclick="fetchTrafficData('SLE')">KPE</button>
-            <button onclick="fetchTrafficData('SLE')">KJE</button>
-            <button onclick="fetchTrafficData('SLE')">PIE</button>
-            <button onclick="fetchTrafficData('SLE')">SLE</button>
-            <button onclick="fetchTrafficData('SLE')">TPE</button>
+            <button onclick="selectExpressway(this, 'AYE')">AYE</button>
+            <button onclick="selectExpressway(this, 'BKE')">BKE</button>
+            <button onclick="selectExpressway(this, 'CTE')">CTE</button>
+            <button onclick="selectExpressway(this, 'KPE')">KPE</button>
+            <button onclick="selectExpressway(this, 'KJE')">KJE</button>
+            <button onclick="selectExpressway(this, 'PIE')">PIE</button>
+            <button onclick="selectExpressway(this, 'SLE')">SLE</button>
+            <button onclick="selectExpressway(this, 'TPE')">TPE</button>
         </div>
+        
          <button onclick="fetchTrafficImages()">Fetch Traffic Images</button>
         <div id="loading" style="display: none;">Loading...</div>
         <div id="traffic-result"></div>
     </div>
 
     <script>
-                function fetchTrafficImages() {
+        let selectedExpressway = null;
+
+        function selectExpressway(button, expressway) {
+            // Remove 'selected' class from all buttons
+            document.querySelectorAll('.expressway-selector button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            // Add 'selected' class to the clicked button
+            button.classList.add('selected');
+            
+            // Set the selected expressway
+            selectedExpressway = expressway;
+        }
+        
+        function fetchTrafficImages() {
+            if (!selectedExpressway) {
+                document.getElementById('traffic-result').innerHTML = "Please select an expressway first.";
+                return;
+            }
+            
             document.getElementById('loading').style.display = 'block';
-            fetch('/download_traffic_images')
+            fetch('/download_traffic_images?expressway=${expressway}')
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('loading').style.display = 'none';
