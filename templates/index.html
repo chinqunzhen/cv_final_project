@@ -1,0 +1,55 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Singapore Traffic Updates</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Singapore Traffic Updates</h1>
+
+        <div class="expressway-selector">
+            <h2>Select an Expressway</h2>
+            <button onclick="fetchTrafficData('ECP')">AYE</button>
+            <button onclick="fetchTrafficData('CTE')">BKE</button>
+            <button onclick="fetchTrafficData('PIE')">CTE</button>
+            <button onclick="fetchTrafficData('SLE')">KPE</button>
+            <button onclick="fetchTrafficData('SLE')">KJE</button>
+            <button onclick="fetchTrafficData('SLE')">PIE</button>
+            <button onclick="fetchTrafficData('SLE')">SLE</button>
+            <button onclick="fetchTrafficData('SLE')">TPE</button>
+        </div>
+         <button onclick="fetchTrafficImages()">Fetch Traffic Images</button>
+        <div id="loading" style="display: none;">Loading...</div>
+        <div id="traffic-result"></div>
+    </div>
+
+    <script>
+                function fetchTrafficImages() {
+            document.getElementById('loading').style.display = 'block';
+            fetch('/download_traffic_images')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loading').style.display = 'none';
+                    if (data.status === "success") {
+                        // Display success message
+                        document.getElementById('traffic-result').innerHTML = "Images downloaded successfully!";
+
+                        // Display the dictionary data
+                        const dictionaryData = JSON.stringify(data.data, null, 2); // Pretty-print JSON
+                        document.getElementById('traffic-result').innerHTML += `<pre>${dictionaryData}</pre>`;
+                    } else {
+                        document.getElementById('traffic-result').innerHTML = "Error: " + data.message;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('traffic-result').innerHTML = "An error occurred: " + error;
+                });
+        }
+
+    </script>
+</body>
+</html>
