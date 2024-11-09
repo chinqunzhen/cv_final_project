@@ -1,4 +1,3 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,46 +21,90 @@
             <button onclick="fetchTrafficImages('9702')">TPE</button>
         </div>
 
-        <div>
+        <div id="loading" style="display: none;">Loading...</div>
 
-            <!-- Add more buttons for other camera IDs as needed -->
+        <!-- Div to display traffic images -->
+        <div id="traffic-result"></div>
+
+        <!-- Div to display predicted (annotated) images -->
+        <div id="predicted-images-result">
+            <h3>Predicted Images with Bounding Boxes</h3>
+            <div id="predicted-images"></div> <!-- Placeholder for predicted images -->
         </div>
 
-        <div id="loading" style="display: none;">Loading...</div>
-        <div id="traffic-result"></div>
+        <!-- Div to display prediction data (optional) -->
+        <div id="prediction-result"></div>
     </div>
 
     <script>
+        // Function to fetch traffic images and predictions based on cameraId
         function fetchTrafficImages(cameraId) {
-            document.getElementById('loading').style.display = 'block';
+            document.getElementById('loading').style.display = 'block';  // Show loading message
+
+            // Fetch traffic images from the backend
             fetch('/download_traffic_images')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('loading').style.display = 'none';  // Hide loading message
 
                     if (data.status === "success") {
-                        const images = data.data.images;
-                        const filteredImages = images.filter(img => img.camera_id === cameraId);
+                        const images = data.data.images;  // Extract the image data
+                        const filteredImages = images.filter(img => img.camera_id === cameraId);  // Filter based on camera ID
 
+                        // Display the images in the 'traffic-result' div
                         if (filteredImages.length > 0) {
-                            // Display images in the 'traffic-result' div
                             let htmlContent = '<div class="image-gallery">';
                             filteredImages.forEach(image => {
-                                htmlContent += `<img src="${image.url}" alt="Traffic Image for Camera ${cameraId}" style="max-width: 100%; height: 50%;">`;
+                                htmlContent += `<img src="${image.url}" alt="Traffic Image for Camera ${cameraId}" style="max-width: 100%; height: auto;">`;
                             });
                             htmlContent += '</div>';
-                            document.getElementById('traffic-result').innerHTML = htmlContent;
+                            document.getElementById('traffic-result').innerHTML = htmlContent;  // Display images
+
+                            // Fetch predictions for the selected camera
+                            fetch(`/predict/${cameraId}`, { method: 'GET' })
+                                .then(response => response.json())
+                                .then(predictionData => {
+                                    // Display prediction result
+                                    if (predictionData.status === "success") {
+                                        // Display predicted images
+                                        displayPredictedImages(predictionData.image_urls);
+
+                                        // Optionally display raw prediction data
+                                        document.getElementById('prediction-result').innerHTML = `Prediction Data: ${JSON.stringify(predictionData.data, null, 2)}`;
+                                    } else {
+                                        document.getElementById('prediction-result').innerHTML = `Prediction Error: ${predictionData.message}`;
+                                    }
+                                })
+                                .catch(error => {
+                                    document.getElementById('prediction-result').innerHTML = `Prediction Error: ${error}`;
+                                });
+
                         } else {
                             document.getElementById('traffic-result').innerHTML = `No images found for Camera ID: ${cameraId}`;
                         }
                     } else {
-                        document.getElementById('traffic-result').innerHTML = "Error: " + data.message;
+                        document.getElementById('traffic-result').innerHTML = `Error: ${data.message}`;
                     }
                 })
                 .catch(error => {
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('traffic-result').innerHTML = "An error occurred: " + error;
+                    document.getElementById('loading').style.display = 'none';  // Hide loading message
+                    document.getElementById('traffic-result').innerHTML = `An error occurred: ${error}`;
                 });
+        }
+
+        // Function to display predicted images (with bounding boxes) on the page
+        function displayPredictedImages(imageUrls) {
+            const predictedImagesContainer = document.getElementById('predicted-images');
+            predictedImagesContainer.innerHTML = '';  // Clear previous results
+
+            imageUrls.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url;  // Use the predicted image URL returned from the backend
+                img.alt = "Predicted Image";
+                img.style.maxWidth = "100%";
+                img.style.height = "auto";
+                predictedImagesContainer.appendChild(img);  // Append to the container
+            });
         }
     </script>
 </body>

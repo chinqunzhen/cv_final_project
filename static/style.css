@@ -13,10 +13,27 @@ body {
     text-align: center;
     padding: 20px;
     max-width: 600px;
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.9); /* Slight transparency */
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5px); /* Blurs the background behind the container */
 }
+
+/* Add the background image here */
+body::before {
+    content: "";
+    background-image: url('/static/background_image.jpeg'); /* Adjust the path if necessary */
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    opacity: 0.7; /* Adjust the transparency */
+}
+
 
 .expressway-selector button {
     margin: 5px;
