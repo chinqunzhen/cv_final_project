@@ -1,0 +1,65 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Singapore Traffic Updates</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Singapore Traffic Updates</h1>
+
+        <div class="expressway-selector">
+            <h2>Select an Expressway</h2>
+            <button onclick="fetchTrafficImages('1703')">AYE</button>
+            <button onclick="fetchTrafficImages('9706')">BKE</button>
+            <button onclick="fetchTrafficImages('1705')">CTE</button>
+            <button onclick="fetchTrafficImages('7794')">KPE</button>
+            <button onclick="fetchTrafficImages('6714')">KJE</button>
+            <button onclick="fetchTrafficImages('6710')">PIE</button>
+            <button onclick="fetchTrafficImages('7796')">SLE</button>
+            <button onclick="fetchTrafficImages('9702')">TPE</button>
+        </div>
+
+        <div>
+
+            <!-- Add more buttons for other camera IDs as needed -->
+        </div>
+
+        <div id="loading" style="display: none;">Loading...</div>
+        <div id="traffic-result"></div>
+    </div>
+
+    <script>
+        function fetchTrafficImages(cameraId) {
+            document.getElementById('loading').style.display = 'block';
+            fetch('/download_traffic_images')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loading').style.display = 'none';
+                    if (data.status === "success") {
+                        // Filter the cameras by the selected camera ID
+                        const filteredCameras = data.data.items.flatMap(item =>
+                            item.cameras.filter(camera => camera.camera_id === cameraId)
+                        );
+
+                        if (filteredCameras.length > 0) {
+                            // Display the filtered camera data
+                            const dictionaryData = JSON.stringify(filteredCameras, null, 2); // Pretty-print JSON
+                            document.getElementById('traffic-result').innerHTML = `<pre>${dictionaryData}</pre>`;
+                        } else {
+                            document.getElementById('traffic-result').innerHTML = `No data found for Camera ID: ${cameraId}`;
+                        }
+                    } else {
+                        document.getElementById('traffic-result').innerHTML = "Error: " + data.message;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('traffic-result').innerHTML = "An error occurred: " + error;
+                });
+        }
+    </script>
+</body>
+</html>
