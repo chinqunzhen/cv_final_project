@@ -38,18 +38,21 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('loading').style.display = 'none';
-                    if (data.status === "success") {
-                        // Filter the cameras by the selected camera ID
-                        const filteredCameras = data.data.items.flatMap(item =>
-                            item.cameras.filter(camera => camera.camera_id === cameraId)
-                        );
 
-                        if (filteredCameras.length > 0) {
-                            // Display the filtered camera data
-                            const dictionaryData = JSON.stringify(filteredCameras, null, 2); // Pretty-print JSON
-                            document.getElementById('traffic-result').innerHTML = `<pre>${dictionaryData}</pre>`;
+                    if (data.status === "success") {
+                        const images = data.data.images;
+                        const filteredImages = images.filter(img => img.camera_id === cameraId);
+
+                        if (filteredImages.length > 0) {
+                            // Display images in the 'traffic-result' div
+                            let htmlContent = '<div class="image-gallery">';
+                            filteredImages.forEach(image => {
+                                htmlContent += `<img src="${image.url}" alt="Traffic Image for Camera ${cameraId}" style="max-width: 100%; height: 50%;">`;
+                            });
+                            htmlContent += '</div>';
+                            document.getElementById('traffic-result').innerHTML = htmlContent;
                         } else {
-                            document.getElementById('traffic-result').innerHTML = `No data found for Camera ID: ${cameraId}`;
+                            document.getElementById('traffic-result').innerHTML = `No images found for Camera ID: ${cameraId}`;
                         }
                     } else {
                         document.getElementById('traffic-result').innerHTML = "Error: " + data.message;

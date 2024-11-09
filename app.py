@@ -37,16 +37,32 @@ def download_traffic_images():
     json_data = fetch_traffic_data()
 
     if json_data:
-        # Print the dictionary to the console (for verification)
+        # Print the JSON data to the console (for verification)
         print(json_data)
 
-        # Process and download images
+        # Process and download images from API (assuming this function exists in your code)
         process_traffic_images(json_data)
+
+        # Fetch images from the local static folder
+        image_dir = Path("static/traffic_images")
+        image_data = []
+
+        if image_dir.exists():
+            for img_file in image_dir.glob("*.jpg"):
+                # Extract camera ID from filename (assuming filename format: cameraID_timestamp.jpg)
+                camera_id = img_file.stem.split('_')[0]
+                image_data.append({
+                    "camera_id": camera_id,
+                    "url": f"/static/traffic_images/{img_file.name}"
+                })
 
         return jsonify({
             "status": "success",
             "message": "Images downloaded successfully",
-            "data": json_data  # Include the dictionary in the response if needed
+            "data": {
+                "json_data": json_data,
+                "images": image_data
+            }
         })
     else:
         return jsonify({"status": "error", "message": "Failed to fetch traffic data"}), 500
