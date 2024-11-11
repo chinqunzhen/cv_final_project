@@ -3,74 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <title>Singapore Traffic Updates</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Singapore Traffic Updates</h1>
+    <div class="container-fluid main-container text-center">
+        <h1 class="mb-3">Singapore Traffic Updates</h1>
+        <hr class="header-line"> <!-- Styled separator after the header -->
 
         <div class="expressway-selector">
             <h2>Select an Expressway</h2>
-            <button onclick="fetchTrafficImages('1703')">AYE</button>
-            <button onclick="fetchTrafficImages('9706')">BKE</button>
-            <button onclick="fetchTrafficImages('1705')">CTE</button>
-            <button onclick="fetchTrafficImages('7794')">KPE</button>
-            <button onclick="fetchTrafficImages('6714')">KJE</button>
-            <button onclick="fetchTrafficImages('6710')">PIE</button>
-            <button onclick="fetchTrafficImages('7796')">SLE</button>
-            <button onclick="fetchTrafficImages('9702')">TPE</button>
+            <button class="btn btn-outline-secondary" onclick="selectExpressway('1703')">AYE</button>
+            <button class="btn btn-outline-secondary" onclick="selectExpressway('9706')">BKE</button>
+            <button class="btn btn-outline-secondary" onclick="selectExpressway('1705')">CTE</button>
+            <button class="btn btn-outline-secondary" onclick="selectExpressway('7794')">KPE</button>
+            <button class="btn btn-outline-secondary" onclick="selectExpressway('6714')">KJE</button>
+            <button class="btn btn-outline-secondary" onclick="selectExpressway('6710')">PIE</button>
+            <button class="btn btn-outline-secondary" onclick="selectExpressway('7796')">SLE</button>
+            <button class="btn btn-outline-secondary" onclick="selectExpressway('9702')">TPE</button>
         </div>
 
+        <div class="d-flex justify-content-center button-container">
+            <button class="btn btn-primary mr-3" onclick="fetchTrafficImages()">Fetch Traffic Images</button>
+            <button class="btn btn-secondary" onclick="clearSelection()">Clear Selection</button>
+        </div>
+        
         <div id="loading" style="display: none;">Loading...</div>
 
-        <!-- Div to display traffic images -->
-        <div id="traffic-result"></div>
+        <div id="traffic-result" class="row d-flex justify-content-center mt-4 image-gallery"></div>
 
-        <!-- Div to display predicted (annotated) images -->
-        <div id="predicted-images-result">
+        <div id="predicted-images-result" class="mt-4">
             <h3>Predicted Images with Bounding Boxes</h3>
-            <div id="predicted-images"></div> <!-- Placeholder for predicted images -->
+            <div class="row d-flex justify-content-center" id="predicted-images"></div>
         </div>
 
-        <!-- Div to display prediction data (optional) -->
         <div id="prediction-result"></div>
     </div>
 
     <script>
-        // Function to fetch traffic images and predictions based on cameraId
-        function fetchTrafficImages(cameraId) {
-            document.getElementById('loading').style.display = 'block';  // Show loading message
+        let selectedCameraId = '';
 
-            // Fetch traffic images from the backend
-            fetch('/download_traffic_images')
+        function selectExpressway(cameraId) {
+            selectedCameraId = cameraId;
+            document.querySelectorAll('.expressway-selector button').forEach(button => button.classList.remove('active'));
+            document.querySelector(`[onclick="selectExpressway('${cameraId}')"]`).classList.add('active');
+        }
+
+        function fetchTrafficImages() {
+            if (!selectedCameraId) {
+                alert("Please select an expressway first.");
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+
+            fetch(`/download_traffic_images?cameraId=${selectedCameraId}`)
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('loading').style.display = 'none';  // Hide loading message
+                    document.getElementById('loading').style.display = 'none';
 
                     if (data.status === "success") {
-                        const images = data.data.images;  // Extract the image data
-                        const filteredImages = images.filter(img => img.camera_id === cameraId);  // Filter based on camera ID
+                        const images = data.data.images;
+                        const filteredImages = images.filter(img => img.camera_id === selectedCameraId);
 
-                        // Display the images in the 'traffic-result' div
                         if (filteredImages.length > 0) {
-                            let htmlContent = '<div class="image-gallery">';
+                            let htmlContent = '';
                             filteredImages.forEach(image => {
-                                htmlContent += `<img src="${image.url}" alt="Traffic Image for Camera ${cameraId}" style="max-width: 100%; height: auto;">`;
+                                htmlContent += `
+                                    <div class="col-12 col-md-6 mb-3 d-flex justify-content-center">
+                                        <img src="${image.url}" alt="Traffic Image for Camera ${selectedCameraId}" class="img-fluid">
+                                    </div>`;
                             });
-                            htmlContent += '</div>';
-                            document.getElementById('traffic-result').innerHTML = htmlContent;  // Display images
+                            document.getElementById('traffic-result').innerHTML = htmlContent;
+                            document.getElementById('predicted-images-result').style.display = 'block';
 
-                            // Fetch predictions for the selected camera
-                            fetch(`/predict/${cameraId}`, { method: 'GET' })
+                            fetch(`/predict/${selectedCameraId}`, { method: 'GET' })
                                 .then(response => response.json())
                                 .then(predictionData => {
-                                    // Display prediction result
                                     if (predictionData.status === "success") {
-                                        // Display predicted images
                                         displayPredictedImages(predictionData.image_urls);
-
-                                        // Optionally display raw prediction data
-                                        document.getElementById('prediction-result').innerHTML = `Prediction Data: ${JSON.stringify(predictionData.data, null, 2)}`;
                                     } else {
                                         document.getElementById('prediction-result').innerHTML = `Prediction Error: ${predictionData.message}`;
                                     }
@@ -78,33 +89,44 @@
                                 .catch(error => {
                                     document.getElementById('prediction-result').innerHTML = `Prediction Error: ${error}`;
                                 });
-
                         } else {
-                            document.getElementById('traffic-result').innerHTML = `No images found for Camera ID: ${cameraId}`;
+                            document.getElementById('traffic-result').innerHTML = `No images found for Camera ID: ${selectedCameraId}`;
                         }
                     } else {
                         document.getElementById('traffic-result').innerHTML = `Error: ${data.message}`;
                     }
                 })
                 .catch(error => {
-                    document.getElementById('loading').style.display = 'none';  // Hide loading message
+                    document.getElementById('loading').style.display = 'none';
                     document.getElementById('traffic-result').innerHTML = `An error occurred: ${error}`;
                 });
         }
 
-        // Function to display predicted images (with bounding boxes) on the page
         function displayPredictedImages(imageUrls) {
             const predictedImagesContainer = document.getElementById('predicted-images');
-            predictedImagesContainer.innerHTML = '';  // Clear previous results
-
+            predictedImagesContainer.innerHTML = '';
+            document.getElementById('predicted-images-result').style.display = 'block';
+        
             imageUrls.forEach(url => {
+                const imgContainer = document.createElement('div');
+                imgContainer.classList.add("col-12", "col-md-6", "mb-3", "d-flex", "justify-content-center");
+        
                 const img = document.createElement('img');
-                img.src = url;  // Use the predicted image URL returned from the backend
+                img.src = url;
                 img.alt = "Predicted Image";
-                img.style.maxWidth = "100%";
-                img.style.height = "auto";
-                predictedImagesContainer.appendChild(img);  // Append to the container
+                img.classList.add("img-fluid", "traffic-image");
+                imgContainer.appendChild(img);
+                
+                predictedImagesContainer.appendChild(imgContainer);
             });
+        }
+
+        function clearSelection() {
+            selectedCameraId = '';
+            document.querySelectorAll('.expressway-selector button').forEach(button => button.classList.remove('active'));
+            document.getElementById('traffic-result').innerHTML = '';
+            document.getElementById('prediction-result').innerHTML = '';
+            document.getElementById('predicted-images-result').style.display = 'none';
         }
     </script>
 </body>

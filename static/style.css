@@ -1,55 +1,98 @@
-/* static/style.css */
-body {
+h1 {
+    font-size: 2.5rem;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.header-line {
+    border: none;
+    border-top: 4px solid #333; /* Darker color and thicker line */
+    width: 80%; /* Adjust width */
+    margin: 0 auto 30px; /* Center the line and add space below */
+}
+
+body, html {
     font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
     background-color: #f0f0f0;
+    height: 100%;
     margin: 0;
 }
 
-.container {
-    text-align: center;
-    padding: 20px;
-    max-width: 600px;
-    background-color: rgba(255, 255, 255, 0.9); /* Slight transparency */
+.container-fluid.main-container {
+    min-height: 100vh; /* Full viewport height */
+    max-width: 100%;
+    background-color: rgba(97, 133, 159, 0.9);
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(5px); /* Blurs the background behind the container */
+    padding-bottom: 20px;
+    padding-top: 20px; /* Add spacing at the top */
+    box-shadow: 0 4px 8px rgba(157, 120, 120, 0.1);
+    backdrop-filter: blur(5px);
 }
 
-/* Add the background image here */
-body::before {
-    content: "";
-    background-image: url('/static/background_image.jpeg'); /* Adjust the path if necessary */
-    background-size: cover;
-    background-position: center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: -1;
-    opacity: 0.7; /* Adjust the transparency */
+.button-container {
+    margin-bottom: 20px; /* Space between buttons and images */
+}
+/* Custom colors for buttons */
+.btn-primary {
+    background-color: #5a605b; /* Change this to your desired color for the "Fetch Traffic Images" button */
+    border-color: #5a605b; /* Border color to match */
+    color: white; /* Text color */
 }
 
+.btn-primary:hover {
+    background-color: #454945; /* Hover color */
+    border-color: #454945;
+}
+
+.btn-secondary {
+    background-color: #d53d32; /* Change this to your desired color for the "Clear Selection" button */
+    border-color: #d53d32;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #a02422; /* Hover color */
+    border-color: #a02422;
+}
 
 .expressway-selector button {
     margin: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
+}
+/* Custom colors for expressway buttons */
+.expressway-selector .btn-outline-secondary {
+    background-color: #3276bf; /* Background color for expressway buttons */
+    border-color: #3276bf; /* Border color for expressway buttons */
+    color: white; /* Text color */
 }
 
-.traffic-image {
-    width: 100%;
-    max-width: 500px;
+.expressway-selector .btn-outline-secondary:hover {
+    background-color: #09427f; /* Hover color for expressway buttons */
+    border-color: #09427f;
+    color: white;
+}
+
+/* Active expressway button style */
+.expressway-selector .btn-outline-secondary.active {
+    background-color: #09427f; /* Color for the active (selected) button */
+    border-color: #09427f;
+    color: white;
+}
+
+#traffic-result img,
+#predicted-images img {
+    max-width: 100%;
     border-radius: 8px;
-    margin-top: 10px;
 }
 
-#loading {
-    font-size: 1.2em;
-    color: #555;
+#traffic-result .col-md-6,
+#predicted-images .col-md-6 {
+    display: flex;
+    justify-content: center;
+}
+
+#predicted-images-result {
+    display: none; /* Hidden by default */
+    margin-top: 20px; /* Space between buttons and prediction section */
 }
