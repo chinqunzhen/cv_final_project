@@ -96,3 +96,9 @@ body, html {
     display: none; /* Hidden by default */
     margin-top: 20px; /* Space between buttons and prediction section */
 }
+
+.active {
+    background-color: #3276bf !important; /* Blue highlight */
+    color: white !important;
+}
+

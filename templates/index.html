@@ -13,15 +13,131 @@
 
         <div class="expressway-selector">
             <h2>Select an Expressway</h2>
-            <button class="btn btn-outline-secondary" onclick="selectExpressway('1703')">AYE</button>
-            <button class="btn btn-outline-secondary" onclick="selectExpressway('9706')">BKE</button>
-            <button class="btn btn-outline-secondary" onclick="selectExpressway('1705')">CTE</button>
-            <button class="btn btn-outline-secondary" onclick="selectExpressway('7794')">KPE</button>
-            <button class="btn btn-outline-secondary" onclick="selectExpressway('6714')">KJE</button>
-            <button class="btn btn-outline-secondary" onclick="selectExpressway('6710')">PIE</button>
-            <button class="btn btn-outline-secondary" onclick="selectExpressway('7796')">SLE</button>
-            <button class="btn btn-outline-secondary" onclick="selectExpressway('9702')">TPE</button>
-        </div>
+            
+            <div class="d-flex justify-content-center">
+                <div class="dropdown mr-3">
+                    <button
+                        class="btn btn-outline-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        AYE
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('4707', 'View from Entrance from Jln Ahmad Ibrahim')">View from Entrance from Jln Ahmad Ibrahim</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('4710', 'View from Towards Pandan Gardens')">View from Towards Pandan Gardens</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('4702', 'View from Keppel Viaduct')">View from Keppel Viaduct</a></li>
+                    </ul>
+                </div>
+            
+                <div class="dropdown mr-3">
+                    <button
+                        class="btn btn-outline-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        BKE
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('2706', 'View from Woodlands Flyover (Towards Checkpoint)')">View from Woodlands Flyover (Towards Checkpoint)</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('2705', 'View from Dairy Farm Flyover')">View from Dairy Farm Flyover</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('2703', 'View from Chantek Flyover')">View from Chantek Flyover</a></li>
+                    </ul>
+                </div>
+            
+                <div class="dropdown mr-3">
+                    <button
+                        class="btn btn-outline-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        CTE
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('1706', 'View from Yio Chu Kang Flyover')">View from Yio Chu Kang Flyover</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('1702', 'View from Braddell Flyover')">View from Braddell Flyover</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('1704', 'View from Entrance from Chin Swee Road')">View from Entrance from Chin Swee Road</a></li>
+                    </ul>
+                </div>
+            
+                <div class="dropdown mr-3">
+                    <button
+                        class="btn btn-outline-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        ECP
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('3798', 'View from Benjamin Sheares Bridge')">View from Benjamin Sheares Bridge</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('3795', 'View from Marine Parade Flyover')">View from Marine Parade Flyover</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('3705', 'View from Exit 2A to Changi Coast Road')">View from Exit 2A to Changi Coast Road</a></li>
+                    </ul>
+                </div>
+            
+                <div class="dropdown mr-3">
+                    <button
+                        class="btn btn-outline-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        KJE
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('8706', 'View from Tengah Flyover')">View from Tengah Flyover</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('8701', 'View from Choa Chu Kang West Flyover')">View from Choa Chu Kang West Flyover</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('8702', 'View from Exit To BKE')">View from Exit To BKE</a></li>
+                    </ul>
+                </div>
+            
+                <div class="dropdown mr-3">
+                    <button
+                        class="btn btn-outline-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        PIE
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('6708', 'View from Nanyang Flyover')">View from Nanyang Flyover</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('6704', 'View from Mount Pleasant')">View from Mount Pleasant</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('6711', 'View from Entrance to PIE from ECP Changi')">View from Entrance to PIE from ECP Changi</a></li>
+                    </ul>
+                </div>
+            
+                <div class="dropdown mr-3">
+                    <button
+                        class="btn btn-outline-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        SLE
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('9703', 'View from SLE(BKE) Exit')">View from SLE(BKE) Exit</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('9706', 'View from Mandai Flyover')">View from Mandai Flyover</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('9702', 'View from Upp Thomson Flyover')">View from Upp Thomson Flyover</a></li>
+                    </ul>
+                </div>
+            
+                <div class="dropdown mr-3">
+                    <button
+                        class="btn btn-outline-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        TPE
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('7796', 'View from Exit to Punggol Flyover')">View from Exit to Punggol Flyover</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('7793', 'View from Tampines Ave 10 Entrance')">View from Tampines Ave 10 Entrance</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectExpressway('7791', 'View from Upp Changi Flyover Towards PIE')">View from Upp Changi Flyover Towards PIE</a></li>
+                    </ul>
+                </div>
+            </div>
+
+        <!-- Placeholder for the selected location message -->
+        <div id="selected-location" class="text-center mt-3" style="font-size: 1.2em; font-weight: bold;"></div>
 
         <div class="d-flex justify-content-center button-container">
             <button class="btn btn-primary mr-3" onclick="fetchTrafficImages()">Fetch Traffic Images</button>
@@ -43,11 +159,24 @@
     <script>
         let selectedCameraId = '';
 
-        function selectExpressway(cameraId) {
+        function selectExpressway(cameraId, locationName) {
             selectedCameraId = cameraId;
-            document.querySelectorAll('.expressway-selector button').forEach(button => button.classList.remove('active'));
-            document.querySelector(`[onclick="selectExpressway('${cameraId}')"]`).classList.add('active');
+        
+            // Clear all active states (both buttons and dropdown items)
+            document.querySelectorAll('.expressway-selector button, .dropdown-menu .dropdown-item').forEach(element => {
+                element.classList.remove('active');
+            });
+        
+            // Highlight the selected button or dropdown item
+            const buttonOrItem = document.querySelector(`[onclick="selectExpressway('${cameraId}', '${locationName}')"]`);
+            if (buttonOrItem) {
+                buttonOrItem.classList.add('active');
+            }
+            // Update the selected location message
+            const selectedLocationElement = document.getElementById('selected-location');
+            selectedLocationElement.textContent = `Location chosen: ${locationName}`;
         }
+        
 
         function fetchTrafficImages() {
             if (!selectedCameraId) {
@@ -123,11 +252,24 @@
 
         function clearSelection() {
             selectedCameraId = '';
-            document.querySelectorAll('.expressway-selector button').forEach(button => button.classList.remove('active'));
+
+            // Remove the 'active' state from all buttons and dropdown items
+            document.querySelectorAll('.expressway-selector button, .dropdown-menu .dropdown-item').forEach(button => button.classList.remove('active'));
+
+            // Clear the selected location message
+            const selectedLocationElement = document.getElementById('selected-location');
+            selectedLocationElement.textContent = ''; // Remove the text content
+
+            document.querySelectorAll('.expressway-selector button, .dropdown-menu .dropdown-item').forEach(button => button.classList.remove('active'));
             document.getElementById('traffic-result').innerHTML = '';
             document.getElementById('prediction-result').innerHTML = '';
             document.getElementById('predicted-images-result').style.display = 'none';
         }
     </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.js" integrity="sha256-DrT5NfxfbHvMHux31Lkhxg42LY6of8TaYyK50jnxRnM=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    </script>
+
 </body>
 </html>

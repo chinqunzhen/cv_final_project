@@ -150,6 +150,9 @@ def predict(camera_id):
         "image_urls": image_urls  # Return URLs of the predicted images
     })
 
+# Placeholder for API endpoint
+API_BASE_URL = ""  # Or set to None
+
 @app.route('/get_traffic', methods=['POST'])
 def get_traffic():
     expressway = request.json.get('expressway')
