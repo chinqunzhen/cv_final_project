@@ -1,3 +1,9 @@
 # Default ignored files
 /shelf/
 /workspace.xml
+
+# Ignored enviroments
+/.venv/
+
+# Ignored directories
+/static/
