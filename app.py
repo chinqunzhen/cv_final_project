@@ -96,11 +96,6 @@ import numpy as np
 
 @app.route('/predict/<camera_id>', methods=['GET'])
 def predict(camera_id):
-    """
-    Predict route with selective model execution:
-    - Camera IDs 1702 and 1705 use only Model 1.
-    - All other camera IDs use both Model 1 and Model 2.
-    """
     # Define directories for traffic images and predictions
     image_dir = Path("static") / "traffic_images"
     save_dir = Path("static") / "predict"
