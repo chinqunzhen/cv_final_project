@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/cvfinalgui.iml" filepath="$PROJECT_DIR$/.idea/cvfinalgui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/cv_newgui.iml" filepath="$PROJECT_DIR$/.idea/cv_newgui.iml" />
     </modules>
   </component>
 </project>
