@@ -12,8 +12,13 @@ app = Flask(__name__)
 # Replace with your API endpoint
 #API_BASE_URL = "https://your-backend-api.com/traffic"
 
-model_path = os.path.join('models', 'best.pt')  # Using relative path to the 'models' folder
-model = YOLO(model_path)
+# Define paths for models
+model1_path = os.path.join('models', 'best.pt')  # Model 1
+model2_path = os.path.join('models', 'best_front.pt')  # Model 2
+
+# Load both models
+model1 = YOLO(model1_path)
+model2 = YOLO(model2_path)
 IMAGE_FOLDER = Path("static/traffic_images")  # Folder where images are stored
 
 
@@ -91,63 +96,104 @@ import numpy as np
 
 @app.route('/predict/<camera_id>', methods=['GET'])
 def predict(camera_id):
-    # Define the directory where images are stored
+    """
+    Predict route using both models simultaneously, saving separate images for each model.
+    """
+    # Define directories for traffic images and predictions
     image_dir = Path("static") / "traffic_images"
-    save_dir = Path("static") / "predict"  # Define the directory for saving predicted images
+    save_dir = Path("static") / "predict"
+    # Clear the 'predict' directory by removing all files before saving new images
+    for file in save_dir.glob("*"):
+        if file.is_file():
+            file.unlink()
 
-    # Ensure the save directory exists
+    # Ensure the prediction directory exists
     save_dir.mkdir(parents=True, exist_ok=True)
-
-    # Get all image files matching the camera_id pattern (e.g., 1703_*.jpg)
+    total_predictions = 0
+    total_incoming = 0
+    # Get all image files for the specified camera_id
     images = [str(img_file) for img_file in image_dir.glob(f"{camera_id}_*.jpg")]
 
     if not images:
         return jsonify({"status": "error", "message": f"No images found for Camera ID {camera_id}."}), 404
 
-    # Perform inference with the YOLO model on the images
-    results = model(images)
-    predictions = []
-    image_urls = []  # To store the URLs of the predicted images
+    # Perform inference using both models
+    results_model1 = model1(images)
+    results_model2 = model2(images)
 
-    for result in results:
-        # Access the detection boxes and probabilities
-        boxes = result.boxes  # Detection bounding boxes
-        probs = result.probs  # Probabilities of detected classes
+    predictions = {"model1": [], "model2": []}
+    image_urls = []  # To store predicted image URLs
 
-        # Prepare prediction results
-        prediction_info = {
-            "image": result.path,  # Image path
+
+
+    for result1, result2 in zip(results_model1, results_model2):
+        # Process Model 1 predictions (cars)
+        model1_info = {
+            "image": result1.path,
             "predictions": []
         }
+        total_predictions = len(result1.boxes)
+        #print(len(result1.boxes))
+        if result1.boxes is not None and result1.probs is not None:
+            for box, prob in zip(result1.boxes, result1.probs):
 
-        if boxes is not None and probs is not None:
-            # Iterate over the detections
-            for box, prob in zip(boxes, probs):
-                prediction_info["predictions"].append({
-                    "label": result.names[prob.argmax()],  # Get the class label based on the highest probability
-                    "confidence": float(prob.max()),  # Confidence score
-                    "coordinates": box.tolist()  # Bounding box coordinates (xmin, ymin, xmax, ymax)
+                model1_info["predictions"].append({
+                    "label": result1.names[prob.argmax()],
+                    "confidence": float(prob.max()),
+                    "coordinates": box.tolist()
                 })
 
-        predictions.append(prediction_info)
+        predictions["model1"].append(model1_info)
 
-        # Convert result.image to a PIL image for saving
-        img_array = result.plot()  # result.plot() returns a NumPy array with annotations
-        img = Image.fromarray(np.uint8(img_array))
+        # Process Model 2 predictions (incoming)
+        model2_info = {
+            "image": result2.path,
+            "predictions": []
+        }
+        total_incoming = len(result2.boxes)
+        if result2.boxes is not None and result2.probs is not None:
+            for box, prob in zip(result2.boxes, result2.probs):
+                label2 = result2.names[prob.argmax()]
+                model2_info["predictions"].append({
+                    "label": result2.names[prob.argmax()],
+                    "confidence": float(prob.max()),
+                    "coordinates": box.tolist()
+                })
 
-        # Save the image in the `static/predict` directory
-        result_path = Path(result.path)  # Convert to Path object
-        save_path = save_dir / f"{result_path.stem}_predicted.jpg"
-        img.save(save_path)
+        predictions["model2"].append(model2_info)
 
-        # Add predicted image URL to list
-        image_urls.append(f"/static/predict/{save_path.name}")
+        # Plot and save Model 1 (cars) predictions
+        img_array1 = result1.plot() if hasattr(result1, 'plot') else None
+        if img_array1 is not None:
+            img1 = Image.fromarray(np.uint8(img_array1))
+            result_path1 = Path(result1.path)  # Use Model 1's path for naming
+            save_path1 = save_dir / f"{result_path1.stem}_predicted_model1.jpg"
+            img1.save(save_path1)  # Save the image
+            image_urls.append(f"/static/predict/{save_path1.name}")
+        else:
+            print(f"Error: Model 1 plot not available for {result1.path}")
 
-    # Return predictions along with image URLs in JSON format
+        # Plot and save Model 2 (incoming) predictions
+        img_array2 = result2.plot() if hasattr(result2, 'plot') else None
+        if img_array2 is not None:
+            img2 = Image.fromarray(np.uint8(img_array2))
+            result_path2 = Path(result2.path)  # Use Model 2's path for naming
+            save_path2 = save_dir / f"{result_path2.stem}_predicted_model2.jpg"
+            img2.save(save_path2)  # Save the image
+            image_urls.append(f"/static/predict/{save_path2.name}")
+        else:
+            print(f"Error: Model 2 plot not available for {result2.path}")
+    print(image_urls)
+    print(total_predictions)
+    print(total_incoming)
+    # Return predictions and image URLs
     return jsonify({
         "status": "success",
         "data": predictions,
-        "image_urls": image_urls  # Return URLs of the predicted images
+        "image_urls": image_urls,
+        "total_predictions": total_predictions,
+        "total_incoming": total_incoming
+
     })
 
 # Placeholder for API endpoint
