@@ -172,6 +172,108 @@
     </div>
 
     <script>
+        const cameraDirectionMapping = {
+        1705: {
+            incoming: "Southbound (towards Central Area)",
+            outgoing: "Northbound (towards Ang Mo Kio)"
+        },
+        1702: {
+             incoming: "Southbound (towards Central Area)",
+             outgoing: "Northbound (towards Ang Mo Kio)"
+        },
+        1704: {
+             incoming: "Southbound (towards Central Area)",
+             outgoing: "Northbound (towards Ang Mo Kio)"
+        },
+        2706: {
+            incoming: "Southbound (towards Bukit Panjang)",
+            outgoing: "Northbound (towards Woodlands Checkpoint)"
+        },
+        2705: {
+           incoming: "Northbound (towards Woodlands Checkpoint)",
+           outgoing: "Southbound (towards Bukit Panjang)"
+        },
+        2703: {
+           incoming: "Southbound (towards Bukit Panjang)",
+           outgoing: "Northbound (towards Woodlands Checkpoint)"
+        },
+        4707: {
+           incoming: "Westbound (towards Tuas)",
+           outgoing: "Eastbound (towards Marina South)"
+        },
+        4710: {
+           incoming: "Eastbound (towards Marina South)",
+           outgoing: "Westbound (towards Tuas)"
+        },
+        4702: {
+           incoming: "Eastbound (towards Marina South)",
+           outgoing: "Westbound (towards Tuas)"
+        },
+        6708: {
+           incoming: "Westbound (towards Tuas)",
+           outgoing: "Eastbound (towards Changi)"
+        },
+        6704: {
+           incoming: "Eastbound (towards Changi)",
+           outgoing: "Westbound (towards Tuas)"
+        },
+        6711: {
+           incoming: "Eastbound (towards Changi)",
+           outgoing: "Westbound (towards Tuas)"
+        },
+        3798: {
+           incoming: "Westbound (towards Marina South)",
+           outgoing: "Eastbound (towards Changi)"
+        },
+        3795: {
+           incoming: "Westbound (towards Marina South)",
+           outgoing: "Eastbound (towards Changi)"
+        },
+
+        3704: {
+            incoming: "Eastbound (towards Changi)",
+            outgoing: "Westbound (towards Marina South)"
+        },
+
+        7794: {
+            incoming: "Westbound (towards Seletar)",
+            outgoing: "Eastbound (towards Pasir Ris)"
+        },
+        7793: {
+            incoming: "Eastbound (towards Pasir Ris)",
+            outgoing: "Westbound (towards Seletar)"
+        },
+        7791: {
+            incoming: "Eastbound (towards Pasir Ris)",
+            outgoing: "Westbound (towards Seletar)"
+        },
+        9703: {
+            incoming: "Westbound (towards Marsiling)",
+            outgoing: "Eastbound (towards Seletar)"
+        },
+        9706: {
+           incoming: "Eastbound (towards Seletar)",
+           outgoing: "Westbound (towards Marsiling)"
+        },
+        9702: {
+            incoming: "Westbound (towards Marsiling)",
+            outgoing: "Eastbound (towards Seletar)"
+        },
+        8706: {
+            incoming: "Westbound (towards Tengah)",
+            outgoing: "Eastbound (towards Bukit Panjang)"
+        },
+        8701: {
+             incoming: "Eastbound (towards Bukit Panjang)",
+             outgoing: "Westbound (towards Tengah)"
+        },
+        8702: {
+             incoming: "Eastbound (towards Bukit Panjang)",
+             outgoing: "Westbound (towards Tengah)"
+        },
+
+
+        };
         let selectedCameraId = '';
 
         function selectExpressway(cameraId, expresswayName, locationName) {
@@ -229,7 +331,7 @@
                                         // Total vehicles
                                         const totalPredictions = predictionData.total_predictions;
                                         const totalIncoming = predictionData.total_incoming;
-                                        const totalOutgoing = totalPredictions - totalIncoming;
+                                        const totalOutgoing = Math.max(totalPredictions - totalIncoming, 0);
 
                                         // Incoming and Outgoing Directions
                                         const incomingDirection = predictionData.incoming_direction || "Unknown";
@@ -248,6 +350,14 @@
                                         const totalOutgoingDiv = document.getElementById('total-outgoing');
                                         totalOutgoingDiv.textContent = `Outgoing Vehicles: ${totalOutgoing}`;
                                         totalOutgoingDiv.style.display = 'block';  // Ensure it's visible
+                                        // Get directions from the mapping
+                                        const directions = cameraDirectionMapping[selectedCameraId] || { incoming: "Unknown", outgoing: "Unknown" };
+                                        // Display the directions
+                                        document.getElementById('incoming-direction').textContent = `Incoming Direction: ${directions.incoming}`;
+                                        document.getElementById('incoming-direction').style.display = 'block';
+
+                                        document.getElementById('outgoing-direction').textContent = `Outgoing Direction: ${directions.outgoing}`;
+                                        document.getElementById('outgoing-direction').style.display = 'block';
 
                                         // Calculate the congestion level for incoming vehicles
                                         let incomingCongestionLevel = "";
