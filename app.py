@@ -7,39 +7,17 @@ from api_request import fetch_traffic_data, process_traffic_images
 from ultralytics import YOLO
 import os
 from pathlib import Path
+from PIL import Image
+import numpy as np
 app = Flask(__name__)
 
-# Replace with your API endpoint
-#API_BASE_URL = "https://your-backend-api.com/traffic"
-
-# Define paths for models
 model1_path = os.path.join('models', 'best.pt')  # Model 1
 model2_path = os.path.join('models', 'best_front.pt')  # Model 2
 
 # Load both models
 model1 = YOLO(model1_path)
 model2 = YOLO(model2_path)
-IMAGE_FOLDER = Path("static/traffic_images")  # Folder where images are stored
-
-
-
-@app.route('/show_random_image')
-def show_random_image():
-
-    #IMAGE_FOLDER = Path("traffic_images")  # Define the image folder here
-
-    # Get a list of all image files in the folder
-    image_files = [f.name for f in IMAGE_FOLDER.glob("*.jpg")]
-
-    if not image_files:
-        return jsonify({"error": "No images found in the folder."}), 404
-
-    # Select a random image
-    random_image = random.choice(image_files)
-    print(random_image)
-    # Render the HTML template with the selected image filename
-    return render_template("showimage.html", filename=random_image)
-
+IMAGE_FOLDER = Path("static/traffic_images")
 
 @app.route('/download_traffic_images')
 def download_traffic_images():
@@ -47,19 +25,19 @@ def download_traffic_images():
     json_data = fetch_traffic_data()
 
     if json_data:
-        # Print the JSON data to the console (for verification)
+
         print(json_data)
 
-        # Process and download images from API (assuming this function exists in your code)
+        # Process and download images from API
         process_traffic_images(json_data)
 
-        # Fetch images from the local static folder
+
         image_dir = Path("static/traffic_images")
         image_data = []
 
         if image_dir.exists():
             for img_file in image_dir.glob("*.jpg"):
-                # Extract camera ID from filename (assuming filename format: cameraID_timestamp.jpg)
+                # Extract camera ID from filename
                 camera_id = img_file.stem.split('_')[0]
                 image_data.append({
                     "camera_id": camera_id,
@@ -79,20 +57,9 @@ def download_traffic_images():
 
 @app.route('/')
 def index():
-    image_files = [f.name for f in IMAGE_FOLDER.glob("*.jpg")]
 
-    if not image_files:
-        return jsonify({"error": "No images found in the folder."}), 404
+    return render_template('index.html')
 
-    # Select a random image
-    random_image = random.choice(image_files)
-    print(random_image)
-    return render_template('index.html', filename=random_image)
-
-
-
-from PIL import Image
-import numpy as np
 
 @app.route('/predict/<camera_id>', methods=['GET'])
 def predict(camera_id):
@@ -121,7 +88,7 @@ def predict(camera_id):
     is_specific_camera = camera_id in specific_camera_ids
 
     predictions = {"model1": [], "model2": []}
-    image_urls = []  # To store predicted image URLs
+    image_urls = []
 
     # Perform inference using Model 1
     results_model1 = model1(images)
@@ -149,7 +116,7 @@ def predict(camera_id):
             img1 = Image.fromarray(np.uint8(img_array1))
             result_path1 = Path(result1.path)  # Use Model 1's path for naming
             save_path1 = save_dir / f"{result_path1.stem}_predicted_model1.jpg"
-            img1.save(save_path1)  # Save the image
+            img1.save(save_path1)
             image_urls.append(f"/static/predict/{save_path1.name}")
         else:
             print(f"Error: Model 1 plot not available for {result1.path}")
@@ -178,7 +145,7 @@ def predict(camera_id):
             img_array2 = result2.plot() if hasattr(result2, 'plot') else None
             if img_array2 is not None:
                 img2 = Image.fromarray(np.uint8(img_array2))
-                result_path2 = Path(result2.path)  # Use Model 2's path for naming
+                result_path2 = Path(result2.path)
                 save_path2 = save_dir / f"{result_path2.stem}_predicted_model2.jpg"
                 img2.save(save_path2)  # Save the image
                 image_urls.append(f"/static/predict/{save_path2.name}")
