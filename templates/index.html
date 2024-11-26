@@ -174,15 +174,15 @@
                     <div class="p-2 mx-2 d-flex align-items-center" style="background-color: green; color: white; border-radius: 5px; min-width: 80px; text-align: center;">
                         <strong>Light</strong>
                     </div>
-                    <span class="mx-1" style="font-weight: bold;">(<20)</span>
+                    <span class="mx-1" style="font-weight: bold;">(<10)</span>
                     <div class="p-2 mx-2 d-flex align-items-center" style="background-color: orange; color: white; border-radius: 5px; min-width: 80px; text-align: center;">
                         <strong>Medium</strong>
                     </div>
-                    <span class="mx-1" style="font-weight: bold;">(≥20 and ≤50)</span>
+                    <span class="mx-1" style="font-weight: bold;">(≥10 and ≤20)</span>
                     <div class="p-2 mx-2 d-flex align-items-center" style="background-color: red; color: white; border-radius: 5px; min-width: 80px; text-align: center;">
                         <strong>Heavy</strong>
                     </div>
-                    <span class="mx-1" style="font-weight: bold;">(>50)</span>
+                    <span class="mx-1" style="font-weight: bold;">(>20)</span>
                 </div>
             </div>            
         </div>
@@ -343,75 +343,82 @@
                             document.getElementById('predicted-images-result').style.display = 'block';
 
                             fetch(`/predict/${selectedCameraId}`, { method: 'GET' })
-                                .then(response => response.json())
-                                .then(predictionData => {
-                                    if (predictionData.status === "success") {
-                                        displayPredictedImages(predictionData.image_urls);
-                                        // Total vehicles
-                                        const totalPredictions = predictionData.total_predictions;
-                                        const totalIncoming = predictionData.total_incoming;
-                                        const totalOutgoing = Math.max(totalPredictions - totalIncoming, 0);
+                              .then(response => response.json())
+                              .then(predictionData => {
+                                 if (predictionData.status === "success") {
+                                     displayPredictedImages(predictionData.image_urls);
 
-                                        // Incoming and Outgoing Directions
-                                        const incomingDirection = predictionData.incoming_direction || "Unknown";
-                                        const outgoingDirection = predictionData.outgoing_direction || "Unknown";
+                                     // Total vehicles
+                                     const totalPredictions = predictionData.total_predictions;
+                                     const totalIncoming = predictionData.total_incoming;
+                                     const totalOutgoing = Math.max(totalPredictions - totalIncoming, 0);
 
-                                        // Display the total predictions below the images
-                                        const totalPredictionsDiv = document.getElementById('total-predictions');
-                                        totalPredictionsDiv.textContent = `Total Number Of Vehicles: ${totalPredictions}`;
-                                        totalPredictionsDiv.style.display = 'block';  // Ensure it's visible
+                                     // Incoming and Outgoing Directions
+                                     const incomingDirection = predictionData.incoming_direction || "Unknown";
+                                     const outgoingDirection = predictionData.outgoing_direction || "Unknown";
 
-                                        const totalIncomingDiv = document.getElementById('total-incoming');
+                                     // Display the total predictions below the images
+                                     const totalPredictionsDiv = document.getElementById('total-predictions');
+                                     totalPredictionsDiv.textContent = `Total Number Of Vehicles: ${totalPredictions}`;
+                                     totalPredictionsDiv.style.display = 'block'; // Ensure it's visible
+                                     // Get directions from the mapping
+                                     const directions = cameraDirectionMapping[selectedCameraId] || { incoming: "Unknown", outgoing: "Unknown" };
+                                     // Display the directions
+                                     document.getElementById('incoming-direction').textContent = `Incoming Direction: ${directions.incoming}`;
+                                     document.getElementById('incoming-direction').style.display = 'block';
+
+                                     document.getElementById('outgoing-direction').textContent = `Outgoing Direction: ${directions.outgoing}`;
+                                     document.getElementById('outgoing-direction').style.display = 'block';
+
+
+                                     const isSpecialCameraId = ['7794', '7793', '3795'].includes(selectedCameraId);
+
+                                     // Conditionally show incoming and outgoing based on the camera ID
+                                     const totalIncomingDiv = document.getElementById('total-incoming');
+                                     const totalOutgoingDiv = document.getElementById('total-outgoing');
+                                     const incomingDirectionDiv = document.getElementById('incoming-direction');
+                                     const outgoingDirectionDiv = document.getElementById('outgoing-direction');
+                                     const incomingCongestionDiv = document.getElementById('incoming-congestion-level');
+                                     const outgoingCongestionDiv = document.getElementById('outgoing-congestion-level');
+
+                                     if (isSpecialCameraId) {
+                                         // Hide incoming and outgoing details
+                                         totalIncomingDiv.style.display = 'block';
+                                         totalOutgoingDiv.style.display = 'none';
+                                         incomingDirectionDiv.style.display = 'block';
+                                         outgoingDirectionDiv.style.display = 'block';
+                                         incomingCongestionDiv.style.display = 'block';
+                                         outgoingCongestionDiv.style.display = 'none';
+                                     } else {
+                                        // Show incoming and outgoing details
                                         totalIncomingDiv.textContent = `Incoming Vehicles: ${totalIncoming}`;
                                         totalIncomingDiv.style.display = 'block';
 
-                                        // Display the total outgoing vehicles
-                                        const totalOutgoingDiv = document.getElementById('total-outgoing');
                                         totalOutgoingDiv.textContent = `Outgoing Vehicles: ${totalOutgoing}`;
-                                        totalOutgoingDiv.style.display = 'block';  // Ensure it's visible
-                                        // Get directions from the mapping
-                                        const directions = cameraDirectionMapping[selectedCameraId] || { incoming: "Unknown", outgoing: "Unknown" };
-                                        // Display the directions
-                                        document.getElementById('incoming-direction').textContent = `Incoming Direction: ${directions.incoming}`;
-                                        document.getElementById('incoming-direction').style.display = 'block';
+                                        totalOutgoingDiv.style.display = 'block';
 
-                                        document.getElementById('outgoing-direction').textContent = `Outgoing Direction: ${directions.outgoing}`;
-                                        document.getElementById('outgoing-direction').style.display = 'block';
+                                        // Calculate congestion levels
+                                        let incomingCongestionLevel = totalIncoming < 10 ? "Light" :
+                                                 (totalIncoming >= 10 && totalIncoming <= 20 ? "Medium" : "Heavy");
 
-                                        // Calculate the congestion level for incoming vehicles
-                                        let incomingCongestionLevel = "";
-                                        if (totalIncoming < 20) {
-                                             incomingCongestionLevel = "Light";
-                                        } else if (totalIncoming >= 20 && totalIncoming <= 50) {
-                                            incomingCongestionLevel = "Medium";
-                                        } else if (totalIncoming > 50) {
-                                             incomingCongestionLevel = "Heavy";
-                                        }
+                                        let outgoingCongestionLevel = totalOutgoing < 10 ? "Light" :
+                                              (totalOutgoing >= 10 && totalOutgoing <= 20 ? "Medium" : "Heavy");
 
-                                        // Calculate the congestion level for outgoing vehicles
-                                        let outgoingCongestionLevel = "";
-                                        if (totalOutgoing < 20) {
-                                            outgoingCongestionLevel = "Light";
-                                        } else if (totalOutgoing >= 20 && totalOutgoing <= 50) {
-                                            outgoingCongestionLevel = "Medium";
-                                        } else if (totalOutgoing > 50) {
-                                             outgoingCongestionLevel = "Heavy";
-                                        }
-                                        // Display the congestion levels
-                                        const incomingCongestionDiv = document.getElementById('incoming-congestion-level');
+                                        // Display congestion levels
                                         incomingCongestionDiv.textContent = `Incoming Congestion Level: ${incomingCongestionLevel}`;
-                                        incomingCongestionDiv.style.display = 'block';  // Ensure it's visible
+                                        incomingCongestionDiv.style.display = 'block';
 
-                                        const outgoingCongestionDiv = document.getElementById('outgoing-congestion-level');
                                         outgoingCongestionDiv.textContent = `Outgoing Congestion Level: ${outgoingCongestionLevel}`;
-                                        outgoingCongestionDiv.style.display = 'block';  // Ensure it's visible
-                                    } else {
-                                        document.getElementById('prediction-result').innerHTML = `Prediction Error: ${predictionData.message}`;
-                                    }
-                                })
-                                .catch(error => {
-                                    document.getElementById('prediction-result').innerHTML = `Prediction Error: ${error}`;
-                                });
+                                        outgoingCongestionDiv.style.display = 'block';
+                                     }
+                              } else {
+                                   document.getElementById('prediction-result').innerHTML = `Prediction Error: ${predictionData.message}`;
+                              }
+                              })
+                              .catch(error => {
+                                 document.getElementById('prediction-result').innerHTML = `Prediction Error: ${error}`;
+                              });
+
                         } else {
                             document.getElementById('traffic-result').innerHTML = `No images found for Camera ID: ${selectedCameraId}`;
                         }
