@@ -1,0 +1,13 @@
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 4
+names: ['bus', 'cars', 'motorcycle', 'trucks']
+
+roboflow:
+  workspace: cv-5isnv
+  project: vehicle-cv-apqbs
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/cv-5isnv/vehicle-cv-apqbs/dataset/1
