@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 1
+names: ['incoming']
+
+roboflow:
+  workspace: cv-5isnv
+  project: front-vehicle-detect-cv
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/cv-5isnv/front-vehicle-detect-cv/dataset/1
